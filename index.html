@@ -1,0 +1,1733 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>Paris May 2026 — Your Itinerary</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Work+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #3b82f6;
+            --primary-dark: #1d4ed8;
+            --primary-light: #60a5fa;
+            --accent: #06b6d4;
+            --dark: #0f172a;
+            --dark-alt: #1e293b;
+            --light: #f8fafc;
+            --gray: #64748b;
+            --light-gray: #e2e8f0;
+        }
+
+        body {
+            font-family: 'Work Sans', sans-serif;
+            background: #f1f5f9;
+            color: var(--dark);
+            line-height: 1.7;
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .hero {
+            background: linear-gradient(135deg, var(--dark) 0%, var(--dark-alt) 100%);
+            color: var(--light);
+            padding: 3rem 2rem 2.5rem;
+            text-align: center;
+            position: relative;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: radial-gradient(circle at 50% 50%, rgba(59, 130, 246, 0.15), transparent 70%);
+            pointer-events: none;
+        }
+
+        .hero h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 3rem;
+            font-weight: 900;
+            position: relative;
+            z-index: 1;
+        }
+
+        .hero .subtitle {
+            font-size: 1.1rem;
+            color: var(--accent);
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            margin-top: 0.5rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        .tab-nav {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background: white;
+            border-bottom: 2px solid var(--light-gray);
+            display: flex;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            scrollbar-width: none;
+        }
+
+        .tab-nav::-webkit-scrollbar { display: none; }
+
+        .tab-btn {
+            flex-shrink: 0;
+            padding: 1rem 1.5rem;
+            background: none;
+            border: none;
+            border-bottom: 3px solid transparent;
+            font-family: 'Work Sans', sans-serif;
+            font-size: 0.95rem;
+            font-weight: 500;
+            color: var(--gray);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+            min-height: 54px;
+        }
+
+        .tab-btn.active {
+            color: var(--primary);
+            border-bottom-color: var(--primary);
+            background: linear-gradient(to bottom, rgba(59, 130, 246, 0.05), transparent);
+        }
+
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.4s ease;
+        }
+
+        .tab-content.active { display: block; }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem 1rem;
+            min-height: 60vh;
+        }
+
+        .section-card {
+            background: white;
+            border-radius: 16px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05), 0 10px 40px rgba(0,0,0,0.03);
+            border: 1px solid var(--light-gray);
+        }
+
+        .section-card h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: 2rem;
+            margin-bottom: 1rem;
+            color: var(--dark);
+        }
+
+        .section-card h3 {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.4rem;
+            margin: 2rem 0 1rem;
+            color: var(--primary);
+        }
+
+        .day-summary {
+            background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+            padding: 1.25rem;
+            border-radius: 12px;
+            margin-bottom: 2rem;
+            border-left: 4px solid var(--primary);
+        }
+
+        .place-card {
+            background: white;
+            border: 1px solid var(--light-gray);
+            border-radius: 12px;
+            padding: 1.25rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .place-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 1rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .place-title {
+            font-weight: 600;
+            font-size: 1.1rem;
+            color: var(--dark);
+        }
+
+        .place-desc {
+            font-size: 0.95rem;
+            color: var(--gray);
+            line-height: 1.6;
+        }
+
+        .place-link {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.5rem 1rem;
+            background: linear-gradient(135deg, var(--primary), var(--primary-light));
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            font-size: 0.875rem;
+            font-weight: 500;
+            white-space: nowrap;
+            flex-shrink: 0;
+        }
+
+        .alternatives {
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1px dashed var(--light-gray);
+        }
+
+        .alternatives-title {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .alt-place {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.5rem 0;
+            gap: 1rem;
+        }
+
+        .alt-name {
+            font-size: 0.875rem;
+            color: var(--gray);
+        }
+
+        .alt-link {
+            padding: 0.35rem 0.75rem;
+            background: var(--light);
+            color: var(--primary);
+            text-decoration: none;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            border: 1px solid var(--light-gray);
+            white-space: nowrap;
+        }
+
+        .route-btn {
+            display: inline-block;
+            width: 100%;
+            padding: 1rem 2rem;
+            background: linear-gradient(135deg, var(--primary), var(--primary-light));
+            color: white;
+            text-decoration: none;
+            border-radius: 10px;
+            font-weight: 600;
+            text-align: center;
+            margin: 1.5rem 0;
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+            margin: 1.5rem 0;
+        }
+
+        .info-card {
+            background: linear-gradient(135deg, #f8fafc, #f1f5f9);
+            padding: 1.5rem;
+            border-radius: 12px;
+            border: 1px solid var(--light-gray);
+        }
+
+        .info-card h4 {
+            font-weight: 600;
+            margin-bottom: 0.75rem;
+            color: var(--primary);
+        }
+
+        .info-card ul {
+            list-style: none;
+        }
+
+        .info-card li {
+            padding: 0.4rem 0;
+            font-size: 0.95rem;
+            color: var(--gray);
+        }
+
+        .alert-box {
+            background: linear-gradient(135deg, #dbeafe, #bfdbfe);
+            border-left: 4px solid var(--primary);
+            padding: 1.25rem;
+            border-radius: 8px;
+            margin: 1.5rem 0;
+        }
+
+        @media (max-width: 768px) {
+            .hero h1 { font-size: 2.5rem; }
+            .container { padding: 1.5rem 1rem; }
+            .section-card { padding: 1.5rem; }
+            .section-card h2 { font-size: 1.6rem; }
+            .place-header { flex-direction: column; }
+            .place-link { width: 100%; text-align: center; }
+            .info-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <div class="hero">
+        <h1>Paris</h1>
+        <div class="subtitle">May 2026 Travel Guide</div>
+    </div>
+
+    <div class="tab-nav">
+        <button class="tab-btn active" onclick="openTab(event, 'transit')">🚇 Transit</button>
+        <button class="tab-btn" onclick="openTab(event, 'may6')">May 6</button>
+        <button class="tab-btn" onclick="openTab(event, 'may7')">May 7</button>
+        <button class="tab-btn" onclick="openTab(event, 'may8')">May 8</button>
+        <button class="tab-btn" onclick="openTab(event, 'may9')">May 9</button>
+        <button class="tab-btn" onclick="openTab(event, 'may10')">May 10</button>
+        <button class="tab-btn" onclick="openTab(event, 'may11')">May 11</button>
+        <button class="tab-btn" onclick="openTab(event, 'may12')">May 12</button>
+        <button class="tab-btn" onclick="openTab(event, 'optional')">✨ Optional</button>
+        <button class="tab-btn" onclick="openTab(event, 'photos')">📸 Photos</button>
+        <button class="tab-btn" onclick="openTab(event, 'tips')">💡 Tips</button>
+    </div>
+
+    <!-- TRANSIT TAB -->
+    <div id="transit" class="tab-content active">
+        <div class="container">
+            <div class="section-card">
+                <h2>🚇 Airport & Transit Guide</h2>
+                
+                <div class="info-grid">
+                    <div class="info-card">
+                        <h4>✈️ Arriving: May 6, 8:15 AM</h4>
+                        <ul>
+                            <li><strong>Airport:</strong> CDG</li>
+                            <li><strong>To City:</strong> RER B to Gare du Nord</li>
+                            <li><strong>Duration:</strong> 28-35 min</li>
+                            <li><strong>Cost:</strong> €14.00 (2026 price)</li>
+                            <li><strong>Then:</strong> 10-min walk to Airbnb</li>
+                            <li><strong>Alternative:</strong> Uber ~€50-70</li>
+                        </ul>
+                    </div>
+
+                    <div class="info-card">
+                        <h4>🛫 Departing: May 12, 1 PM</h4>
+                        <ul>
+                            <li><strong>Leave Airbnb:</strong> By 10 AM</li>
+                            <li><strong>To Airport:</strong> RER B or Uber</li>
+                            <li><strong>Uber recommended:</strong> With luggage</li>
+                        </ul>
+                    </div>
+
+                    <div class="info-card">
+                        <h4>🎫 Best Pass: Navigo Week</h4>
+                        <ul>
+                            <li><strong>Price:</strong> €32.40 + €5 card</li>
+                            <li><strong>Valid:</strong> Mon-Sun (May 5-11)</li>
+                            <li><strong>Includes:</strong> All metro, RER, bus + airport</li>
+                            <li><strong>Buy:</strong> Gare du Nord (NOT at CDG)</li>
+                        </ul>
+                    </div>
+
+                    <div class="info-card">
+                        <h4>🗺️ Your Location</h4>
+                        <ul>
+                            <li><strong>Address:</strong> 14 Blvd de la Chapelle</li>
+                            <li><strong>Metro:</strong> Barbès-Rochechouart (L2, L4)</li>
+                            <li><strong>To Montmartre:</strong> 15-min walk</li>
+                            <li><strong>To Le Marais:</strong> 15-min metro (L2)</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <h3>📱 2026 Ticket System Changes (Important!)</h3>
+                <div class="alert-box">
+                    <strong>⚠️ Paper Tickets Are DEAD:</strong> As of June 2026, paper metro tickets no longer work. You MUST use either: (1) Navigo Easy card (€2), or (2) Mobile app (Bonjour RATP or Île-de-France Mobilités). No exceptions!
+                </div>
+
+                <h3>🎟️ Complete Ticket & Pass Guide (2026 Prices)</h3>
+
+                <h3 style="font-size: 1.2rem; margin-top: 2rem;">Single Tickets</h3>
+                <div class="info-grid">
+                    <div class="info-card">
+                        <h4>Metro-Train-RER Ticket</h4>
+                        <ul>
+                            <li><strong>Price:</strong> €2.55 (full) / €1.30 (child 4-9)</li>
+                            <li><strong>Valid:</strong> 2 hours with unlimited transfers</li>
+                            <li><strong>Covers:</strong> All metro, RER, trains in Paris</li>
+                            <li><strong>NOT valid:</strong> Buses, trams, airports</li>
+                        </ul>
+                    </div>
+
+                    <div class="info-card">
+                        <h4>Bus-Tram Ticket</h4>
+                        <ul>
+                            <li><strong>Price:</strong> €2.05 (full) / €1.05 (child)</li>
+                            <li><strong>Valid:</strong> 90 min with unlimited transfers</li>
+                            <li><strong>Covers:</strong> All buses & trams</li>
+                            <li><strong>NOT valid:</strong> Metro, RER, trains</li>
+                        </ul>
+                    </div>
+
+                    <div class="info-card">
+                        <h4>Airport Ticket</h4>
+                        <ul>
+                            <li><strong>Price:</strong> €14.00 (full) / €7.00 (child)</li>
+                            <li><strong>Valid:</strong> One-way to/from CDG or Orly</li>
+                            <li><strong>Covers:</strong> RER B to CDG, Metro 14 to Orly</li>
+                            <li><strong>Use:</strong> Arrival & departure days</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <h3 style="font-size: 1.2rem; margin-top: 2rem;">Multi-Day Passes (Best for Tourists)</h3>
+                <div class="info-grid">
+                    <div class="info-card">
+                        <h4>⭐ Navigo Week Pass (RECOMMENDED)</h4>
+                        <ul>
+                            <li><strong>Price:</strong> €32.40 + €5 card = €37.40 total</li>
+                            <li><strong>Valid:</strong> Monday 12 AM - Sunday 11:59 PM</li>
+                            <li><strong>Your dates:</strong> May 5-11 (PERFECT fit!)</li>
+                            <li><strong>Includes:</strong> Unlimited metro, RER, bus, tram + AIRPORT ACCESS</li>
+                            <li><strong>Savings:</strong> Pays for itself after ~15 trips</li>
+                            <li><strong>Buy:</strong> Gare du Nord upon arrival (need passport photo)</li>
+                        </ul>
+                    </div>
+
+                    <div class="info-card">
+                        <h4>Navigo Day Pass (Navigo Jour)</h4>
+                        <ul>
+                            <li><strong>Price:</strong> €12.30 per day</li>
+                            <li><strong>Valid:</strong> 12 AM - 11:59 PM (single calendar day)</li>
+                            <li><strong>Includes:</strong> Unlimited metro, RER, bus, tram</li>
+                            <li><strong>Excludes:</strong> Airport access</li>
+                            <li><strong>Use case:</strong> Only if you skip the weekly pass</li>
+                        </ul>
+                    </div>
+
+                    <div class="info-card">
+                        <h4>Paris Visite Pass (Tourist Pass)</h4>
+                        <ul>
+                            <li><strong>1 day:</strong> €30.60 / €15.30 (child)</li>
+                            <li><strong>2 days:</strong> €45.40 / €22.70 (child)</li>
+                            <li><strong>3 days:</strong> €63.80 / €31.90 (child)</li>
+                            <li><strong>5 days:</strong> €76.25 / €38.10 (child)</li>
+                            <li><strong>Includes:</strong> Airport access + discounts at attractions</li>
+                            <li><strong>Verdict:</strong> More expensive than Navigo Week for your dates</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <h3>💡 Which Pass Should You Buy?</h3>
+                <div class="info-grid">
+                    <div class="info-card" style="background: linear-gradient(135deg, #dbeafe, #bfdbfe); border-left: 4px solid var(--primary);">
+                        <h4>✅ FOR YOUR TRIP: Navigo Week</h4>
+                        <ul>
+                            <li><strong>Cost:</strong> €37.40 total (€32.40 pass + €5 card)</li>
+                            <li><strong>Math:</strong> You'll take ~20-25 trips over 6 days</li>
+                            <li><strong>Savings:</strong> ~€25 vs buying single tickets</li>
+                            <li><strong>Bonus:</strong> Includes airport on arrival/departure</li>
+                            <li><strong>Validity:</strong> May 5-11 = Mon-Sun (perfect!)</li>
+                        </ul>
+                    </div>
+
+                    <div class="info-card">
+                        <h4>Alternative: Single Tickets</h4>
+                        <ul>
+                            <li><strong>When:</strong> If you're taking <5 trips/day</li>
+                            <li><strong>Cost:</strong> €2.55 per metro ride</li>
+                            <li><strong>Buy:</strong> Navigo Easy card (€2) + load tickets</li>
+                            <li><strong>Your trip:</strong> You'll likely take 15-20+ trips = €40-50</li>
+                            <li><strong>Verdict:</strong> More expensive than weekly pass</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <h3>🛒 How to Buy Transit Tickets in 2026</h3>
+
+                <div class="place-card">
+                    <div style="margin-bottom: 1rem;">
+                        <div class="place-title">Option 1: Navigo Easy Card (Easiest for Tourists)</div>
+                        <div class="place-desc" style="margin-top: 0.5rem;">
+                            <strong>Step 1:</strong> Buy Navigo Easy card (€2) at any metro ticket machine<br>
+                            <strong>Step 2:</strong> Load it with tickets or passes (Navigo Week, single tickets, etc.)<br>
+                            <strong>Step 3:</strong> Tap card on turnstile to enter<br>
+                            <strong>Where to buy:</strong> All metro stations, ticket machines have English option<br>
+                            <strong>Payment:</strong> Visa/Mastercard (NOT Amex)
+                        </div>
+                    </div>
+                </div>
+
+                <div class="place-card">
+                    <div style="margin-bottom: 1rem;">
+                        <div class="place-title">Option 2: Mobile App (No Physical Card Needed)</div>
+                        <div class="place-desc" style="margin-top: 0.5rem;">
+                            <strong>Apps:</strong> "Bonjour RATP" or "Île-de-France Mobilités"<br>
+                            <strong>Download:</strong> iOS App Store or Google Play<br>
+                            <strong>Buy tickets:</strong> Directly in app with credit card<br>
+                            <strong>Validate:</strong> Hold phone to turnstile (NFC must be on)<br>
+                            <strong>Pro:</strong> Skip the ticket machine lines
+                        </div>
+                    </div>
+                </div>
+
+                <div class="place-card">
+                    <div style="margin-bottom: 1rem;">
+                        <div class="place-title">Option 3: Navigo Découverte (For Weekly/Monthly Pass)</div>
+                        <div class="place-desc" style="margin-top: 0.5rem;">
+                            <strong>Cost:</strong> €5 one-time (same as Navigo Easy, but personalized)<br>
+                            <strong>Required:</strong> Passport photo (bring one or use photo booth at station)<br>
+                            <strong>Load:</strong> Weekly pass (€32.40) or monthly pass (€90.80)<br>
+                            <strong>Buy at:</strong> Gare du Nord ticket counter or machines<br>
+                            <strong>Your trip:</strong> This is what you need for Navigo Week
+                        </div>
+                    </div>
+                </div>
+
+                <h3>🚇 Metro & RER Operating Hours</h3>
+                <div class="info-grid">
+                    <div class="info-card">
+                        <h4>Metro Hours</h4>
+                        <ul>
+                            <li><strong>Weekdays:</strong> 5:30 AM - 1:15 AM</li>
+                            <li><strong>Fri/Sat nights:</strong> 5:30 AM - 2:15 AM</li>
+                            <li><strong>After hours:</strong> Use Uber or night buses</li>
+                        </ul>
+                    </div>
+
+                    <div class="info-card">
+                        <h4>RER Hours (Airport Line)</h4>
+                        <ul>
+                            <li><strong>First train from CDG:</strong> 4:50 AM</li>
+                            <li><strong>Last train from CDG:</strong> 11:50 PM</li>
+                            <li><strong>Your arrival:</strong> 8:15 AM (perfect timing)</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <h3>⚠️ Important Transit Tips</h3>
+                <div class="alert-box">
+                    <strong>Metro vs Bus Tickets:</strong> They're SEPARATE! If you switch from metro to bus, you need TWO tickets (one metro €2.55, one bus €2.05). Only passes give you free transfers between networks.
+                </div>
+
+                <div class="alert-box">
+                    <strong>RER B Pickpockets:</strong> RER B (airport line) is notorious for pickpockets. Keep bag in front, phone in pocket, don't fall asleep. Especially crowded during rush hours (8-9 AM, 5-7 PM).
+                </div>
+
+                <div class="alert-box">
+                    <strong>Airport RER B Trains:</strong> Take ONLY B3 trains TO the airport (not B5). Check the display board shows "Aéroport CDG" lit up before boarding.
+                </div>
+
+                <div class="alert-box">
+                    <strong>💡 Download Apps Before You Go:</strong> Citymapper (best for navigation), Bonjour RATP (official Paris transit), Google Maps offline, Uber. Make sure your phone plan has international data or buy SIM at airport.
+                </div>
+
+                <h3>📍 Key Metro Lines for Your Trip</h3>
+                <div class="info-grid">
+                    <div class="info-card">
+                        <h4>Line 2 (Your Main Line)</h4>
+                        <ul>
+                            <li><strong>Your station:</strong> Barbès-Rochechouart</li>
+                            <li><strong>Direct to:</strong> Le Marais, Montmartre, Arc de Triomphe</li>
+                            <li><strong>Color:</strong> Blue</li>
+                            <li><strong>Use:</strong> Most of your sightseeing</li>
+                        </ul>
+                    </div>
+
+                    <div class="info-card">
+                        <h4>Line 4 (North-South)</h4>
+                        <ul>
+                            <li><strong>Your station:</strong> Barbès-Rochechouart</li>
+                            <li><strong>Direct to:</strong> Notre Dame (Cité), Saint-Germain</li>
+                            <li><strong>Color:</strong> Purple/Magenta</li>
+                        </ul>
+                    </div>
+
+                    <div class="info-card">
+                        <h4>RER B (Airport Line)</h4>
+                        <ul>
+                            <li><strong>From:</strong> Gare du Nord (10 min walk from Airbnb)</li>
+                            <li><strong>To:</strong> CDG Airport (35 min)</li>
+                            <li><strong>Cost:</strong> €14 or free with Navigo Week</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <h3>🎫 Final Recommendation for Your Dates</h3>
+                <div class="place-card" style="background: linear-gradient(135deg, #dbeafe, #bfdbfe); border-left: 4px solid var(--primary);">
+                    <div class="place-title" style="font-size: 1.2rem;">Buy Navigo Week Pass on Arrival</div>
+                    <div class="place-desc" style="margin-top: 1rem; font-size: 1rem;">
+                        <strong>When:</strong> Right when you arrive at Gare du Nord from CDG<br>
+                        <strong>What:</strong> Navigo Découverte card (€5) + Navigo Semaine weekly pass (€32.40) = €37.40 total<br>
+                        <strong>Valid:</strong> May 5-11 (Monday-Sunday) — covers your ENTIRE trip including airport<br>
+                        <strong>Bring:</strong> Passport photo (or use photo booth at station for ~€5)<br>
+                        <strong>Where:</strong> Gare du Nord ticket office or machines with photo upload<br>
+                        <strong>Savings:</strong> ~€25-30 vs buying single tickets for 6 days<br>
+                        <strong>Bonus:</strong> No thinking about tickets for the rest of your trip!
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MAY 6 TAB -->
+    <div id="may6" class="tab-content">
+        <div class="container">
+            <div class="section-card">
+                <h2>May 6 (Tuesday) — Solo Arrival Day</h2>
+                <div class="day-summary">
+                    <strong>Arrive:</strong> 8:15 AM at CDG<br>
+                    <strong>Airbnb check-in:</strong> 2-3 PM<br>
+                    <strong>Evening:</strong> Ainara arrives → Montmartre drinks<br>
+                    <strong>Today's vibe:</strong> Tourist highlights + cold approach practice
+                </div>
+
+                <h3>Morning: Arrival & Coffee</h3>
+
+                <div class="place-card">
+                    <div class="place-header">
+                        <div>
+                            <div class="place-title">☕ Coffee Stop (Le Marais)</div>
+                            <div class="place-desc">After dropping bags, grab coffee in Le Marais. Great people-watching, cold approach potential.</div>
+                        </div>
+                        <a href="https://maps.google.com/?q=The+Coffee+2+Rue+Saint-Gilles+Paris" target="_blank" class="place-link">📍 The Coffee</a>
+                    </div>
+                    <div class="alternatives">
+                        <div class="alternatives-title">Alternative Cafés:</div>
+                        <div class="alt-place">
+                            <span class="alt-name">BlackBird Coffee (77 Rue du Temple)</span>
+                            <a href="https://maps.google.com/?q=BlackBird+Coffee+77+Rue+du+Temple+Paris" target="_blank" class="alt-link">Map</a>
+                        </div>
+                        <div class="alt-place">
+                            <span class="alt-name">Bel Horizon Coffee Roasters (26 Bd Garibaldi)</span>
+                            <a href="https://maps.google.com/?q=Bel+Horizon+Coffee+Roasters+Paris" target="_blank" class="alt-link">Map</a>
+                        </div>
+                    </div>
+                </div>
+
+                <h3>Midday: Tourist Photos</h3>
+
+                <div class="place-card">
+                    <div class="place-header">
+                        <div>
+                            <div class="place-title">🌳 Tuileries Garden</div>
+                            <div class="place-desc">Classic Parisian garden between Louvre and Place de la Concorde. Green chairs, fountains, elegant backgrounds perfect for dating profile photos.</div>
+                        </div>
+                        <a href="https://maps.google.com/?q=Tuileries+Garden+Paris" target="_blank" class="place-link">📍 Map</a>
+                    </div>
+                </div>
+
+                <div class="place-card">
+                    <div class="place-header">
+                        <div>
+                            <div class="place-title">🏛️ Louvre (Exterior Only)</div>
+                            <div class="place-desc">Glass pyramid, courtyard. Don't go inside — just photos. Iconic backdrop, quick stop.</div>
+                        </div>
+                        <a href="https://maps.google.com/?q=Louvre+Museum+Paris" target="_blank" class="place-link">📍 Map</a>
+                    </div>
+                </div>
+
+                <h3>Afternoon: Check-in & Rest</h3>
+                <p style="margin: 1rem 0; color: var(--gray);">2:30 PM - Check into Airbnb (14 Blvd de la Chapelle), shower, recharge before evening.</p>
+
+                <h3>Evening: Montmartre with Ainara</h3>
+
+                <div class="place-card">
+                    <div class="place-header">
+                        <div>
+                            <div class="place-title">🍷 Drinks in Montmartre/Pigalle</div>
+                            <div class="place-desc">15-min walk from Airbnb. Explore Sacré-Cœur area, grab drinks. Local vibe, lots of bars.</div>
+                        </div>
+                        <a href="https://maps.google.com/?q=Montmartre+Paris" target="_blank" class="place-link">📍 Montmartre</a>
+                    </div>
+                </div>
+
+                <a href="https://www.google.com/maps/dir/Gare+du+Nord,+Paris/The+Coffee,+2+Rue+Saint-Gilles,+75003+Paris/Tuileries+Garden,+Paris/Louvre+Museum,+Paris/14+Boulevard+de+la+Chapelle,+75018+Paris/Montmartre,+Paris" target="_blank" class="route-btn">
+                    📍 Open Full Day Route in Google Maps
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- MAY 7 TAB -->
+    <div id="may7" class="tab-content">
+        <div class="container">
+            <div class="section-card">
+                <h2>May 7 (Wed) — Classic Paris Route</h2>
+                <div class="day-summary">
+                    <strong>Theme:</strong> Notre Dame, Eiffel Tower, Seine, Rooftop Bars<br>
+                    <strong>Group:</strong> You + Ainara + Dima + Vika<br>
+                    <strong>Highlights:</strong> Dima's must-see Notre Dame ✓ Eiffel sunset ✓ Le Marais nightlife ✓
+                </div>
+
+                <h3>Morning: Breakfast Near Airbnb</h3>
+
+                <div class="place-card">
+                    <div class="place-header">
+                        <div>
+                            <div class="place-title">☕ Breakfast in Montmartre/Barbès</div>
+                            <div class="place-desc">Start your day close to home. Cozy neighborhood café near Sacré-Cœur. Good coffee, croissants, local vibe before heading to Notre Dame.</div>
+                        </div>
+                        <a href="https://maps.google.com/?q=Hardware+Société+10+Rue+Lamarck+Paris" target="_blank" class="place-link">📍 Hardware Société</a>
+                    </div>
+                    <div class="alternatives">
+                        <div class="alternatives-title">Alternative Breakfast Spots:</div>
+                        <div class="alt-place">
+                            <span class="alt-name">Le Progrès (classic Parisian café near Airbnb)</span>
+                            <a href="https://maps.google.com/?q=Le+Progrès+7+Rue+des+Trois+Frères+Paris" target="_blank" class="alt-link">Map</a>
+                        </div>
+                        <div class="alt-place">
+                            <span class="alt-name">Soul Kitchen (brunch spot, Pigalle area)</span>
+                            <a href="https://maps.google.com/?q=Soul+Kitchen+33+Rue+Lamarck+Paris" target="_blank" class="alt-link">Map</a>
+                        </div>
+                    </div>
+                </div>
+
+                <h3>Late Morning: Notre Dame & Île de la Cité</h3>
+
+                <div class="place-card">
+                    <div class="place-header">
+                        <div>
+                            <div class="place-title">⛪ Notre-Dame Cathedral</div>
+                            <div class="place-desc">Metro Line 4 from Barbès (15 min). Iconic Gothic cathedral (exterior only, under reconstruction). Walk around Île de la Cité, cross bridges for photos.</div>
+                        </div>
+                        <a href="https://maps.google.com/?q=Notre-Dame+de+Paris" target="_blank" class="place-link">📍 Map</a>
+                    </div>
+                </div>
+
+                <div class="place-card">
+                    <div class="place-header">
+                        <div>
+                            <div class="place-title">☕ Coffee Break (Île Saint-Louis)</div>
+                            <div class="place-desc">After Notre Dame, grab coffee on the quieter island next door. Classic Parisian atmosphere, Seine views.</div>
+                        </div>
+                        <a href="https://maps.google.com/?q=Café+Saint-Régis+Paris" target="_blank" class="place-link">📍 Café Saint-Régis</a>
+                    </div>
+                    <div class="alternatives">
+                        <div class="alternatives-title">Alternative Cafés:</div>
+                        <div class="alt-place">
+                            <span class="alt-name">Berthillon (famous ice cream + café)</span>
+                            <a href="https://maps.google.com/?q=Berthillon+Paris" target="_blank" class="alt-link">Map</a>
+                        </div>
+                        <div class="alt-place">
+                            <span class="alt-name">Café Louis Philippe (Seine views)</span>
+                            <a href="https://maps.google.com/?q=Café+Louis+Philippe+Paris" target="_blank" class="alt-link">Map</a>
+                        </div>
+                    </div>
+                </div>
+
+                <h3>Afternoon: Eiffel Tower</h3>
+
+                <div class="place-card">
+                    <div class="place-header">
+                        <div>
+                            <div class="place-title">🌉 Pont Alexandre III</div>
+                            <div class="place-desc">Paris's most ornate bridge. Golden sculptures, Art Nouveau lamps. ESSENTIAL for dating profile photos. Walk here from Notre Dame or take Metro Line 1.</div>
+                        </div>
+                        <a href="https://maps.google.com/?q=Pont+Alexandre+III+Paris" target="_blank" class="place-link">📍 Map</a>
+                    </div>
+                </div>
+
+                <div class="place-card">
+                    <div class="place-header">
+                        <div>
+                            <div class="place-title">🗼 Eiffel Tower (Trocadéro)</div>
+                            <div class="place-desc">Classic Eiffel shot from Trocadéro plaza. Best panoramic view. Then walk to Champ de Mars for ground-level photos.</div>
+                        </div>
+                        <a href="https://maps.google.com/?q=Trocadéro+Paris" target="_blank" class="place-link">📍 Map</a>
+                    </div>
+                </div>
+
+                <h3>Evening: Rooftop + Le Marais</h3>
+
+                <div class="place-card">
+                    <div class="place-header">
+                        <div>
+                            <div class="place-title">🍸 Rooftop Bar (Sunset Drinks + Photos)</div>
+                            <div class="place-desc">Rooftop with Eiffel views. Reservations recommended. Dress smart casual. Arrive for sunset (~8-9 PM in May). Perfect for evening dating profile photos with city backdrop.</div>
+                        </div>
+                        <a href="https://maps.google.com/?q=SKYBAR+PARIS+ROOFTOP" target="_blank" class="place-link">📍 SKYBAR</a>
+                    </div>
+                    <div class="alternatives">
+                        <div class="alternatives-title">Alternative Rooftops for Evening Photos:</div>
+                        <div class="alt-place">
+                            <span class="alt-name">10ème Ciel (Pullman Eiffel, stunning tower views)</span>
+                            <a href="https://maps.google.com/?q=10ème+Ciel+Rooftop+Paris" target="_blank" class="alt-link">Map</a>
+                        </div>
+                        <div class="alt-place">
+                            <span class="alt-name">Perruche (Printemps rooftop, panoramic city)</span>
+                            <a href="https://maps.google.com/?q=Perruche+Paris" target="_blank" class="alt-link">Map</a>
+                        </div>
+                        <div class="alt-place">
+                            <span class="alt-name">Georges at Pompidou (modern, artsy vibe)</span>
+                            <a href="https://maps.google.com/?q=Restaurant+Georges+Pompidou+Paris" target="_blank" class="alt-link">Map</a>
+                        </div>
+                        <div class="alt-place">
+                            <span class="alt-name">Montparnasse Tower (360° views, best Eiffel shot)</span>
+                            <a href="https://maps.google.com/?q=Tour+Montparnasse+Observation+Deck+Paris" target="_blank" class="alt-link">Map</a>
+                        </div>
+                        <div class="alt-place">
+                            <span class="alt-name">TOO Restaurant (17th floor, Seine + Eiffel views)</span>
+                            <a href="https://maps.google.com/?q=TOO+Restaurant+Paris" target="_blank" class="alt-link">Map</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="place-card">
+                    <div class="place-header">
+                        <div>
+                            <div class="place-title">🍽️ Dinner (Le Marais)</div>
+                            <div class="place-desc">Head to Le Marais for dinner. Tons of options — bistros, falafel, trendy spots. Pick what looks good or try one of these.</div>
+                        </div>
+                        <a href="https://maps.google.com/?q=restaurants+Le+Marais+Paris" target="_blank" class="place-link">📍 Search Area</a>
+                    </div>
+                    <div class="alternatives">
+                        <div class="alternatives-title">Dinner Suggestions:</div>
+                        <div class="alt-place">
+                            <span class="alt-name">Breizh Café (best crêpes in Paris)</span>
+                            <a href="https://maps.google.com/?q=Breizh+Café+Paris" target="_blank" class="alt-link">Map</a>
+                        </div>
+                        <div class="alt-place">
+                            <span class="alt-name">Chez Janou (French bistro, lively)</span>
+                            <a href="https://maps.google.com/?q=Chez+Janou+Paris" target="_blank" class="alt-link">Map</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="place-card">
+                    <div class="place-header">
+                        <div>
+                            <div class="place-title">🍹 Late Night Cocktails</div>
+                            <div class="place-desc">Top 50 world's best bars. Creative cocktails, no menu — bartenders craft based on your taste. Book ahead or arrive early.</div>
+                        </div>
+                        <a href="https://maps.google.com/?q=Little+Red+Door+60+Rue+Charlot+Paris" target="_blank" class="place-link">📍 Little Red Door</a>
+                    </div>
+                    <div class="alternatives">
+                        <div class="alternatives-title">Alternative Bars:</div>
+                        <div class="alt-place">
+                            <span class="alt-name">Bisou. (no menu, custom drinks)</span>
+                            <a href="https://maps.google.com/?q=Bisou+Paris+bar" target="_blank" class="alt-link">Map</a>
+                        </div>
+                        <div class="alt-place">
+                            <span class="alt-name">La Candelaria (taqueria + bar)</span>
+                            <a href="https://maps.google.com/?q=La+Candelaria+Paris" target="_blank" class="alt-link">Map</a>
+                        </div>
+                    </div>
+                </div>
+
+                <a href="https://www.google.com/maps/dir/14+Boulevard+de+la+Chapelle,+Paris/Hardware+Société,+10+Rue+Lamarck,+Paris/Notre-Dame+de+Paris/Pont+Alexandre+III,+Paris/Eiffel+Tower,+Paris/SKYBAR+PARIS+ROOFTOP/Le+Marais,+Paris/Little+Red+Door,+60+Rue+Charlot,+Paris/14+Boulevard+de+la+Chapelle,+Paris" target="_blank" class="route-btn">
+                    📍 Open Full Day Route in Google Maps
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- MAY 8 TAB -->
+    <div id="may8" class="tab-content">
+        <div class="container">
+            <div class="section-card">
+                <h2>May 8 (Thu) — Artsy/Trendy Route</h2>
+                <div class="day-summary">
+                    <strong>Theme:</strong> Montmartre, Canal Saint-Martin, Le Marais<br>
+                    <strong>Advantage:</strong> You're already in Montmartre (15-min walk from Airbnb!)<br>
+                    <strong>Vibe:</strong> Local spots, trendy cafés, rooftop bars, jazz club
+                </div>
+
+                <h3>Morning: Breakfast + Montmartre Walk</h3>
+
+                <div class="place-card">
+                    <div class="place-header">
+                        <div>
+                            <div class="place-title">☕ Breakfast Near Airbnb</div>
+                            <div class="place-desc">Start your day steps from home. Grab breakfast in Montmartre before exploring. Pastries, coffee, local morning vibe.</div>
+                        </div>
+                        <a href="https://maps.google.com/?q=Le+Consulat+18+Rue+Norvins+Paris" target="_blank" class="place-link">📍 Le Consulat</a>
+                    </div>
+                    <div class="alternatives">
+                        <div class="alternatives-title">Alternative Breakfast Spots:</div>
+                        <div class="alt-place">
+                            <span class="alt-name">La Maison Rose (iconic pink café)</span>
+                            <a href="https://maps.google.com/?q=La+Maison+Rose+2+Rue+de+l'Abreuvoir+Paris" target="_blank" class="alt-link">Map</a>
+                        </div>
+                        <div class="alt-place">
+                            <span class="alt-name">Café des Deux Moulins (Amélie film café)</span>
+                            <a href="https://maps.google.com/?q=Café+des+Deux+Moulins+Paris" target="_blank" class="alt-link">Map</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="place-card">
+                    <div class="place-header">
+                        <div>
+                            <div class="place-title">⛪ Sacré-Cœur Basilica</div>
+                            <div class="place-desc">Walk uphill from Airbnb (15 min). White dome church at Montmartre's peak. Panoramic city views from steps. Free entry. Cobblestone streets perfect for photos.</div>
+                        </div>
+                        <a href="https://maps.google.com/?q=Sacré-Cœur+Paris" target="_blank" class="place-link">📍 Map</a>
+                    </div>
+                </div>
+
+                <div class="place-card">
+                    <div class="place-header">
+                        <div>
+                            <div class="place-title">🎭 Moulin Rouge</div>
+                            <div class="place-desc">Walk downhill from Sacré-Cœur (10 min). Iconic red windmill cabaret. Photo op outside (don't need tickets). Kitschy but recognizable landmark.</div>
+                        </div>
+                        <a href="https://maps.google.com/?q=Moulin+Rouge+Paris" target="_blank" class="place-link">📍 Map</a>
+                    </div>
+                </div>
+
+                <h3>Afternoon: Canal + Le Marais</h3>
+
+                <div class="place-card">
+                    <div class="place-header">
+                        <div>
+                            <div class="place-title">🌊 Canal Saint-Martin</div>
+                            <div class="place-desc">Metro Line 2 from Pigalle (10 min). Trendy waterside hangout. Locals sit along canal edge. Very aesthetic for casual European photos. Young vibe, great for cold approach.</div>
+                        </div>
+                        <a href="https://maps.google.com/?q=Canal+Saint-Martin+Paris" target="_blank" class="place-link">📍 Map</a>
+                    </div>
+                </div>
+
+                <div class="place-card">
+                    <div class="place-header">
+                        <div>
+                            <div class="place-title">🍽️ Lunch in Le Marais</div>
+                            <div class="place-desc">Walk or metro to Le Marais (15 min). Tons of options. Jewish quarter, falafel spots, trendy bistros. Walk around, pick what looks good.</div>
+                        </div>
+                        <a href="https://maps.google.com/?q=L'As+du+Fallafel+Paris" target="_blank" class="place-link">📍 L'As du Fallafel</a>
+                    </div>
+                    <div class="alternatives">
+                        <div class="alternatives-title">Alternative Lunch Spots:</div>
+                        <div class="alt-place">
+                            <span class="alt-name">Marché des Enfants Rouges (food market)</span>
+                            <a href="https://maps.google.com/?q=Marché+des+Enfants+Rouges+Paris" target="_blank" class="alt-link">Map</a>
+                        </div>
+                        <div class="alt-place">
+                            <span class="alt-name">Breizh Café (best crêpes in Paris)</span>
+                            <a href="https://maps.google.com/?q=Breizh+Café+Paris" target="_blank" class="alt-link">Map</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="place-card">
+                    <div class="place-header">
+                        <div>
+                            <div class="place-title">🏛️ Place des Vosges</div>
+                            <div class="place-desc">Oldest planned square in Paris. Symmetrical arcades, elegant. Perfect for refined dating profile photos. Quiet, less touristy.</div>
+                        </div>
+                        <a href="https://maps.google.com/?q=Place+des+Vosges+Paris" target="_blank" class="place-link">📍 Map</a>
+                    </div>
+                </div>
+
+                <h3>Evening: Rooftop + Bar Hop</h3>
+
+                <div class="place-card">
+                    <div class="place-header">
+                        <div>
+                            <div class="place-title">🍸 ROOF Paris (Evening Photos)</div>
+                            <div class="place-desc">Large rooftop in Le Marais. Views of Saint-Eustache church. Vibrant scene, Asian fusion food. €50 minimum per person. Arrive for sunset. Great for urban evening photos with city lights.</div>
+                        </div>
+                        <a href="https://maps.google.com/?q=ROOF+Paris+43+Rue+Étienne+Marcel" target="_blank" class="place-link">📍 Map</a>
+                    </div>
+                    <div class="alternatives">
+                        <div class="alternatives-title">Alternative Rooftops for Evening Photos:</div>
+                        <div class="alt-place">
+                            <span class="alt-name">Perchoir Marais (cocktails, intimate rooftop)</span>
+                            <a href="https://maps.google.com/?q=Perchoir+Marais+Paris" target="_blank" class="alt-link">Map</a>
+                        </div>
+                        <div class="alt-place">
+                            <span class="alt-name">Café Oz Rooftop (party vibe, Seine views)</span>
+                            <a href="https://maps.google.com/?q=Rooftop+Café+Oz+Paris" target="_blank" class="alt-link">Map</a>
+                        </div>
+                        <div class="alt-place">
+                            <span class="alt-name">Mama Shelter East (trendy, panoramic terrace)</span>
+                            <a href="https://maps.google.com/?q=Mama+Shelter+Rooftop+Paris" target="_blank" class="alt-link">Map</a>
+                        </div>
+                        <div class="alt-place">
+                            <span class="alt-name">FAUST (Seine-side terrace, Eiffel views)</span>
+                            <a href="https://maps.google.com/?q=FAUST+Paris" target="_blank" class="alt-link">Map</a>
+                        </div>
+                        <div class="alt-place">
+                            <span class="alt-name">Fluctuat Nec Mergitur (floating bar on Seine)</span>
+                            <a href="https://maps.google.com/?q=Fluctuat+Nec+Mergitur+Paris" target="_blank" class="alt-link">Map</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="place-card">
+                    <div class="place-header">
+                        <div>
+                            <div class="place-title">🍽️ Dinner (Le Marais)</div>
+                            <div class="place-desc">Stay in Le Marais for dinner. Tons of bistros and trendy spots. Walk around and pick what appeals.</div>
+                        </div>
+                        <a href="https://maps.google.com/?q=restaurants+Le+Marais+Paris" target="_blank" class="place-link">📍 Search Area</a>
+                    </div>
+                    <div class="alternatives">
+                        <div class="alternatives-title">Dinner Suggestions:</div>
+                        <div class="alt-place">
+                            <span class="alt-name">Chez Janou (French bistro, lively)</span>
+                            <a href="https://maps.google.com/?q=Chez+Janou+Paris" target="_blank" class="alt-link">Map</a>
+                        </div>
+                        <div class="alt-place">
+                            <span class="alt-name">Pink Mamma (Italian, Instagram-worthy)</span>
+                            <a href="https://maps.google.com/?q=Pink+Mamma+Paris" target="_blank" class="alt-link">Map</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="place-card">
+                    <div class="place-header">
+                        <div>
+                            <div class="place-title">🎵 38Riv Jazz Club</div>
+                            <div class="place-desc">Intimate jazz venue. Live music nightly, small basement setting. Book ahead or arrive early. Authentic Paris nightlife.</div>
+                        </div>
+                        <a href="https://maps.google.com/?q=38Riv+Jazz+Club+38+Rue+de+Rivoli+Paris" target="_blank" class="place-link">📍 Map</a>
+                    </div>
+                    <div class="alternatives">
+                        <div class="alternatives-title">Alternative Bars:</div>
+                        <div class="alt-place">
+                            <span class="alt-name">La Resistance (cocktails, relaxed)</span>
+                            <a href="https://maps.google.com/?q=La+Resistance+Paris+bar" target="_blank" class="alt-link">Map</a>
+                        </div>
+                        <div class="alt-place">
+                            <span class="alt-name">Bar Nouveau (Top 50 bar, tiny)</span>
+                            <a href="https://maps.google.com/?q=Bar+Nouveau+5+Rue+des+Haudriettes+Paris" target="_blank" class="alt-link">Map</a>
+                        </div>
+                    </div>
+                </div>
+
+                <a href="https://www.google.com/maps/dir/14+Boulevard+de+la+Chapelle,+Paris/Le+Consulat,+18+Rue+Norvins,+Paris/Sacré-Cœur,+Paris/Moulin+Rouge,+Paris/Canal+Saint-Martin,+Paris/L'As+du+Fallafel,+Paris/Place+des+Vosges,+Paris/ROOF+Paris/38Riv+Jazz+Club,+Paris/14+Boulevard+de+la+Chapelle,+Paris" target="_blank" class="route-btn">
+                    📍 Open Full Day Route in Google Maps
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Continue with remaining days May 9-12, Photos, Tips tabs... -->
+    <!-- Keeping structure identical but each day has ONE route with alternatives only for cafes/restaurants/bars -->
+
+    <!-- MAY 9 TAB -->
+    <div id="may9" class="tab-content">
+        <div class="container">
+            <div class="section-card">
+                <h2>May 9 (Fri) — Bougie Paris Route</h2>
+                <div class="day-summary">
+                    <strong>Theme:</strong> Arc de Triomphe, Champs-Élysées, Palais Royal, Bridges<br>
+                    <strong>Vibe:</strong> Grand boulevards, luxury streets, elegant gardens, refined photos
+                </div>
+
+                <h3>Morning: Breakfast + Arc de Triomphe</h3>
+
+                <div class="place-card">
+                    <div class="place-header">
+                        <div>
+                            <div class="place-title">☕ Breakfast Near Airbnb</div>
+                            <div class="place-desc">Start close to home before heading across town. Grab coffee and pastries in Montmartre/Barbès before metro to Arc.</div>
+                        </div>
+                        <a href="https://maps.google.com/?q=Le+Grenier+à+Pain+38+Rue+des+Abbesses+Paris" target="_blank" class="place-link">📍 Le Grenier à Pain</a>
+                    </div>
+                    <div class="alternatives">
+                        <div class="alternatives-title">Alternative Breakfast Spots:</div>
+                        <div class="alt-place">
+                            <span class="alt-name">Le Progrès (classic Parisian café)</span>
+                            <a href="https://maps.google.com/?q=Le+Progrès+7+Rue+des+Trois+Frères+Paris" target="_blank" class="alt-link">Map</a>
+                        </div>
+                        <div class="alt-place">
+                            <span class="alt-name">Hardware Société (brunch spot)</span>
+                            <a href="https://maps.google.com/?q=Hardware+Société+10+Rue+Lamarck+Paris" target="_blank" class="alt-link">Map</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="place-card">
+                    <div class="place-header">
+                        <div>
+                            <div class="place-title">🏛️ Arc de Triomphe</div>
+                            <div class="place-desc">Metro Line 2 direct from Barbès to Charles de Gaulle-Étoile (20 min). Massive triumphal arch. Can climb to rooftop for 360° views (€13). Best vantage point to see Champs-Élysées layout.</div>
+                        </div>
+                        <a href="https://maps.google.com/?q=Arc+de+Triomphe+Paris" target="_blank" class="place-link">📍 Map</a>
+                    </div>
+                </div>
+
+                <div class="place-card">
+                    <div class="place-header">
+                        <div>
+                            <div class="place-title">🛍️ Champs-Élysées</div>
+                            <div class="place-desc">Walk down famous boulevard from Arc. Wide avenue with cafés, luxury shops. Good for photos with Arc in background. Walk toward Place de la Concorde.</div>
+                        </div>
+                        <a href="https://maps.google.com/?q=Champs-Élysées+Paris" target="_blank" class="place-link">📍 Map</a>
+                    </div>
+                </div>
+
+                <h3>Afternoon: Palais Royal & Bridges</h3>
+
+                <div class="place-card">
+                    <div class="place-header">
+                        <div>
+                            <div class="place-title">🍽️ Lunch Near Palais Royal</div>
+                            <div class="place-desc">Metro Line 1 from Concorde to Palais Royal (5 min). Lots of bistros around Palais Royal gardens. Pick what looks good or try these.</div>
+                        </div>
+                        <a href="https://maps.google.com/?q=restaurants+near+Palais+Royal+Paris" target="_blank" class="place-link">📍 Search Area</a>
+                    </div>
+                    <div class="alternatives">
+                        <div class="alternatives-title">Lunch Recommendations:</div>
+                        <div class="alt-place">
+                            <span class="alt-name">Ellsworth (modern American bistro)</span>
+                            <a href="https://maps.google.com/?q=Ellsworth+Paris" target="_blank" class="alt-link">Map</a>
+                        </div>
+                        <div class="alt-place">
+                            <span class="alt-name">Café Kitsuné (trendy Japanese-French)</span>
+                            <a href="https://maps.google.com/?q=Café+Kitsuné+Palais+Royal+Paris" target="_blank" class="alt-link">Map</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="place-card">
+                    <div class="place-header">
+                        <div>
+                            <div class="place-title">🏛️ Palais Royal Gardens</div>
+                            <div class="place-desc">Hidden elegant garden behind Louvre. Black/white striped columns (Buren Columns) — very Instagram-worthy. Quiet, refined atmosphere.</div>
+                        </div>
+                        <a href="https://maps.google.com/?q=Palais+Royal+Paris" target="_blank" class="place-link">📍 Map</a>
+                    </div>
+                </div>
+
+                <div class="place-card">
+                    <div class="place-header">
+                        <div>
+                            <div class="place-title">🌉 Pont des Arts</div>
+                            <div class="place-desc">Walk from Palais Royal (10 min). Pedestrian bridge over Seine. Former "love locks" bridge. Great river views, Louvre + Île de la Cité backdrop. Romantic photo spot.</div>
+                        </div>
+                        <a href="https://maps.google.com/?q=Pont+des+Arts+Paris" target="_blank" class="place-link">📍 Map</a>
+                    </div>
+                </div>
+
+                <h3>Evening: Rooftop Bar</h3>
+
+                <div class="place-card">
+                    <div class="place-header">
+                        <div>
+                            <div class="place-title">🍸 Rooftop Bar Dame des Arts (Sunset Photos)</div>
+                            <div class="place-desc">Panoramic views — Eiffel, Notre Dame, Sacré-Cœur visible. Closes at 8 PM, so go for sunset (arrive ~6:30 PM). Reservations recommended weekends. Perfect golden hour backdrop for photos.</div>
+                        </div>
+                        <a href="https://maps.google.com/?q=Rooftop+Bar+Dame+des+Arts+4+Rue+Danton+Paris" target="_blank" class="place-link">📍 Map</a>
+                    </div>
+                    <div class="alternatives">
+                        <div class="alternatives-title">Alternative Rooftops for Evening Photos:</div>
+                        <div class="alt-place">
+                            <span class="alt-name">Le Perchoir (multiple locations, rotating views)</span>
+                            <a href="https://maps.google.com/?q=Le+Perchoir+Paris" target="_blank" class="alt-link">Map</a>
+                        </div>
+                        <div class="alt-place">
+                            <span class="alt-name">Mama Shelter Rooftop (East Paris, trendy)</span>
+                            <a href="https://maps.google.com/?q=Mama+Shelter+Rooftop+Paris" target="_blank" class="alt-link">Map</a>
+                        </div>
+                        <div class="alt-place">
+                            <span class="alt-name">Sacré-Cœur steps at sunset (free, dramatic city views)</span>
+                            <a href="https://maps.google.com/?q=Sacré-Cœur+Paris" target="_blank" class="alt-link">Map</a>
+                        </div>
+                        <div class="alt-place">
+                            <span class="alt-name">Peninsula Paris Rooftop (ultra-luxury, Arc views)</span>
+                            <a href="https://maps.google.com/?q=The+Peninsula+Paris+Rooftop" target="_blank" class="alt-link">Map</a>
+                        </div>
+                        <div class="alt-place">
+                            <span class="alt-name">Bonnie (Canal Saint-Martin rooftop, local vibe)</span>
+                            <a href="https://maps.google.com/?q=Bonnie+Paris+Rooftop" target="_blank" class="alt-link">Map</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="place-card">
+                    <div class="place-header">
+                        <div>
+                            <div class="place-title">🍽️ Dinner (Saint-Germain)</div>
+                            <div class="place-desc">Stay in Saint-Germain area after rooftop. Classic Left Bank dining, tons of bistros. Walk around Blvd Saint-Germain and pick what appeals.</div>
+                        </div>
+                        <a href="https://maps.google.com/?q=restaurants+Saint-Germain-des-Prés+Paris" target="_blank" class="place-link">📍 Search Area</a>
+                    </div>
+                    <div class="alternatives">
+                        <div class="alternatives-title">Dinner Suggestions:</div>
+                        <div class="alt-place">
+                            <span class="alt-name">Les Deux Magots (historic café)</span>
+                            <a href="https://maps.google.com/?q=Les+Deux+Magots+Paris" target="_blank" class="alt-link">Map</a>
+                        </div>
+                        <div class="alt-place">
+                            <span class="alt-name">Lipp Brasserie (classic French)</span>
+                            <a href="https://maps.google.com/?q=Brasserie+Lipp+Paris" target="_blank" class="alt-link">Map</a>
+                        </div>
+                    </div>
+                </div>
+
+                <a href="https://www.google.com/maps/dir/14+Boulevard+de+la+Chapelle,+Paris/Le+Grenier+à+Pain,+38+Rue+des+Abbesses,+Paris/Arc+de+Triomphe,+Paris/Champs-Élysées,+Paris/Palais+Royal,+Paris/Pont+des+Arts,+Paris/Rooftop+Bar+Dame+des+Arts,+Paris/14+Boulevard+de+la+Chapelle,+Paris" target="_blank" class="route-btn">
+                    📍 Open Full Day Route in Google Maps
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- MAY 10 TAB -->
+    <div id="may10" class="tab-content">
+        <div class="container">
+            <div class="section-card">
+                <h2>May 10 (Sat) — Flexible Day</h2>
+                <div class="day-summary">
+                    <strong>Options:</strong> Day trip to Versailles OR more Paris photo spots<br>
+                    <strong>Weather dependent:</strong> Check forecast and decide morning-of
+                </div>
+
+                <h3>Option A: Versailles Day Trip</h3>
+
+                <div class="place-card">
+                    <div class="place-header">
+                        <div>
+                            <div class="place-title">🏰 Palace of Versailles</div>
+                            <div class="place-desc">Massive royal palace + gardens. Opulent halls, Hall of Mirrors, formal gardens. Go early (9 AM). RER C from Paris (~40 min), €8 each way.</div>
+                        </div>
+                        <a href="https://maps.google.com/?q=Palace+of+Versailles" target="_blank" class="place-link">📍 Map</a>
+                    </div>
+                </div>
+
+                <h3>Option B: More Paris Parks & Photos</h3>
+
+                <div class="place-card">
+                    <div class="place-header">
+                        <div>
+                            <div class="place-title">🌳 Luxembourg Gardens</div>
+                            <div class="place-desc">Classic Parisian park. Green metal chairs, fountains, palace backdrop. Perfect for relaxed outdoor dating profile photos.</div>
+                        </div>
+                        <a href="https://maps.google.com/?q=Jardin+du+Luxembourg+Paris" target="_blank" class="place-link">📍 Map</a>
+                    </div>
+                </div>
+
+                <div class="place-card">
+                    <div class="place-header">
+                        <div>
+                            <div class="place-title">🏞️ Parc des Buttes-Chaumont</div>
+                            <div class="place-desc">Hilly park with cliffs, waterfall, temple. Dramatic natural backgrounds for adventurous dating photos. Less touristy, more local.</div>
+                        </div>
+                        <a href="https://maps.google.com/?q=Parc+des+Buttes-Chaumont+Paris" target="_blank" class="place-link">📍 Map</a>
+                    </div>
+                </div>
+
+                <div class="alert-box">
+                    <strong>💡 Flexible Day Strategy:</strong> Wake up, check weather. Sunny = Versailles or parks. Rainy = museums (Musée d'Orsay, Rodin) or revisit favorite spots from earlier in week.
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MAY 11 TAB -->
+    <div id="may11" class="tab-content">
+        <div class="container">
+            <div class="section-card">
+                <h2>May 11 (Sun) — Last Full Day + Solo Evening</h2>
+                <div class="day-summary">
+                    <strong>Daytime:</strong> You + group (everyone leaves evening)<br>
+                    <strong>Evening:</strong> Solo (Dima, Vika, Ainara depart)<br>
+                    <strong>Strategy:</strong> Relaxed day → Solo bar OR quiet night
+                </div>
+
+                <h3>Daytime (With Group)</h3>
+                <p style="margin: 1.5rem 0; color: var(--gray);">Revisit favorite spots, final group photos, leisurely brunch, or hit anything you missed from May 7-10.</p>
+
+                <h3>Solo Evening Options</h3>
+
+                <div class="place-card">
+                    <div class="place-header">
+                        <div>
+                            <div class="place-title">🍸 Solo Bar for Cold Approach</div>
+                            <div class="place-desc">No-menu cocktail bar. Bartenders ask preferences, create custom drinks. Easy to chat with staff + other patrons. Le Marais.</div>
+                        </div>
+                        <a href="https://maps.google.com/?q=Bisou+Paris+bar" target="_blank" class="place-link">📍 Bisou.</a>
+                    </div>
+                    <div class="alternatives">
+                        <div class="alternatives-title">Alternative Solo Spots:</div>
+                        <div class="alt-place">
+                            <span class="alt-name">La Resistance (relaxed cocktails)</span>
+                            <a href="https://maps.google.com/?q=La+Resistance+Paris+bar" target="_blank" class="alt-link">Map</a>
+                        </div>
+                        <div class="alt-place">
+                            <span class="alt-name">Seine River walk (reflective solo time)</span>
+                            <a href="https://maps.google.com/?q=Seine+River+Paris" target="_blank" class="alt-link">Map</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="alert-box">
+                    <strong>⚠️ Tonight's Checklist:</strong> Pack for tomorrow's departure • Set 9 AM alarm • Book Uber to airport if needed • Charge phone overnight • Final check of Airbnb
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MAY 12 TAB -->
+    <div id="may12" class="tab-content">
+        <div class="container">
+            <div class="section-card">
+                <h2>May 12 (Mon) — Departure Day</h2>
+                <div class="day-summary">
+                    <strong>Flight:</strong> 1:00 PM from CDG<br>
+                    <strong>Leave Airbnb:</strong> By 10:00 AM<br>
+                    <strong>Airport arrival target:</strong> 10:30-11:00 AM (2 hours before flight)
+                </div>
+
+                <h3>Morning Timeline</h3>
+
+                <div class="place-card">
+                    <div class="place-header">
+                        <div>
+                            <div class="place-title">☕ Quick Coffee (Optional)</div>
+                            <div class="place-desc">If you wake early and want one last Parisian moment, grab quick coffee near Gare du Nord. 5-10 min from Airbnb.</div>
+                        </div>
+                        <a href="https://maps.google.com/?q=coffee+near+Gare+du+Nord+Paris" target="_blank" class="place-link">📍 Search Area</a>
+                    </div>
+                </div>
+
+                <h3>Airport Transport</h3>
+
+                <div class="info-grid">
+                    <div class="info-card">
+                        <h4>Option A: Uber (Recommended)</h4>
+                        <ul>
+                            <li><strong>Cost:</strong> €50-70</li>
+                            <li><strong>Duration:</strong> 30-45 min</li>
+                            <li><strong>Pro:</strong> Door-to-door with luggage</li>
+                            <li><strong>Book:</strong> Night before for 9:30 AM</li>
+                        </ul>
+                    </div>
+
+                    <div class="info-card">
+                        <h4>Option B: RER B Train</h4>
+                        <ul>
+                            <li><strong>Cost:</strong> €14</li>
+                            <li><strong>Duration:</strong> 10 min walk + 35 min train</li>
+                            <li><strong>Take B3 trains only</strong> (not B5)</li>
+                            <li><strong>Check:</strong> Display shows "Aéroport CDG"</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="alert-box">
+                    <strong>💡 Departure Day Tips:</strong> Uber is worth it for stress-free departure with luggage • If taking RER B, allow extra time for walking with bags • Have passport ready • Check flight status before leaving
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- OPTIONAL SPOTS TAB -->
+    <div id="optional" class="tab-content">
+        <div class="container">
+            <div class="section-card">
+                <h2>✨ Optional Spots — If You Have Extra Time</h2>
+                <div class="day-summary">
+                    <strong>Use these when:</strong> Weather changes plans • Finished early • Want to switch things up • May 10 flexible day<br>
+                    <strong>Mix & match:</strong> Pick 2-3 per day if you have energy after main routes
+                </div>
+
+                <h3>🏛️ Museums & Culture</h3>
+
+                <div class="place-card">
+                    <div class="place-header">
+                        <div>
+                            <div class="place-title">🎨 Musée d'Orsay</div>
+                            <div class="place-desc">Impressionist masterpieces — Monet, Van Gogh, Renoir. Housed in beautiful Beaux-Arts train station. Less crowded than Louvre. Allow 2-3 hours. €16 entry.</div>
+                        </div>
+                        <a href="https://maps.google.com/?q=Musée+d'Orsay+Paris" target="_blank" class="place-link">📍 Map</a>
+                    </div>
+                </div>
+
+                <div class="place-card">
+                    <div class="place-header">
+                        <div>
+                            <div class="place-title">🖼️ Musée Rodin</div>
+                            <div class="place-desc">The Thinker sculpture + beautiful garden. Smaller, quieter museum. Great for photos. Near Eiffel area. 1-2 hours. €13 entry (€4 garden only).</div>
+                        </div>
+                        <a href="https://maps.google.com/?q=Musée+Rodin+Paris" target="_blank" class="place-link">📍 Map</a>
+                    </div>
+                </div>
+
+                <div class="place-card">
+                    <div class="place-header">
+                        <div>
+                            <div class="place-title">🎭 Musée de l'Orangerie</div>
+                            <div class="place-desc">Monet's giant Water Lilies in oval rooms. Small museum, huge impact. Tuileries Garden location. 1 hour. €12.50 entry.</div>
+                        </div>
+                        <a href="https://maps.google.com/?q=Musée+de+l'Orangerie+Paris" target="_blank" class="place-link">📍 Map</a>
+                    </div>
+                </div>
+
+                <h3>🌳 Parks & Nature Spots</h3>
+
+                <div class="place-card">
+                    <div class="place-header">
+                        <div>
+                            <div class="place-title">🏞️ Parc des Buttes-Chaumont</div>
+                            <div class="place-desc">Dramatic park with cliffs, waterfall, temple on hill. Best for adventurous dating profile photos. Less touristy, more locals. Metro Line 7 or walk from Canal Saint-Martin.</div>
+                        </div>
+                        <a href="https://maps.google.com/?q=Parc+des+Buttes-Chaumont+Paris" target="_blank" class="place-link">📍 Map</a>
+                    </div>
+                </div>
+
+                <div class="place-card">
+                    <div class="place-header">
+                        <div>
+                            <div class="place-title">🌳 Jardin du Luxembourg</div>
+                            <div class="place-desc">Classic Parisian park. Green metal chairs, fountain, palace backdrop. Perfect for relaxed outdoor dating photos. Less crowded than Tuileries. Left Bank location.</div>
+                        </div>
+                        <a href="https://maps.google.com/?q=Jardin+du+Luxembourg+Paris" target="_blank" class="place-link">📍 Map</a>
+                    </div>
+                </div>
+
+                <div class="place-card">
+                    <div class="place-header">
+                        <div>
+                            <div class="place-title">🌲 Bois de Vincennes</div>
+                            <div class="place-desc">Massive park on east side. Lakes, château, Buddhist temple. Great for escaping crowds. Rent a rowboat. Metro Line 1 to Château de Vincennes.</div>
+                        </div>
+                        <a href="https://maps.google.com/?q=Bois+de+Vincennes+Paris" target="_blank" class="place-link">📍 Map</a>
+                    </div>
+                </div>
+
+                <h3>🏛️ Unique Neighborhoods</h3>
+
+                <div class="place-card">
+                    <div class="place-header">
+                        <div>
+                            <div class="place-title">🌆 Belleville</div>
+                            <div class="place-desc">Multicultural neighborhood, street art, panoramic views from Parc de Belleville. Authentic local vibe, cheap eats. Metro Lines 2 or 11.</div>
+                        </div>
+                        <a href="https://maps.google.com/?q=Belleville+Paris" target="_blank" class="place-link">📍 Map</a>
+                    </div>
+                </div>
+
+                <div class="place-card">
+                    <div class="place-header">
+                        <div>
+                            <div class="place-title">🏘️ La Butte-aux-Cailles</div>
+                            <div class="place-desc">Village-like neighborhood in 13th arr. Cobblestone streets, street art, intimate bars. Very local, hardly any tourists. Metro Line 6 to Corvisart.</div>
+                        </div>
+                        <a href="https://maps.google.com/?q=La+Butte-aux-Cailles+Paris" target="_blank" class="place-link">📍 Map</a>
+                    </div>
+                </div>
+
+                <div class="place-card">
+                    <div class="place-header">
+                        <div>
+                            <div class="place-title">🌉 Pont de Bir-Hakeim</div>
+                            <div class="place-desc">Two-level iron bridge with Eiffel Tower views. Iconic from Inception movie. Great for moody evening photos. Metro Line 6 to Bir-Hakeim.</div>
+                        </div>
+                        <a href="https://maps.google.com/?q=Pont+de+Bir-Hakeim+Paris" target="_blank" class="place-link">📍 Map</a>
+                    </div>
+                </div>
+
+                <h3>🛍️ Markets & Shopping</h3>
+
+                <div class="place-card">
+                    <div class="place-header">
+                        <div>
+                            <div class="place-title">🧀 Marché d'Aligre</div>
+                            <div class="place-desc">Authentic local market. Cheese, produce, vintage items. Open Tue-Sun mornings. Real Parisian market experience. Metro Line 8 to Ledru-Rollin.</div>
+                        </div>
+                        <a href="https://maps.google.com/?q=Marché+d'Aligre+Paris" target="_blank" class="place-link">📍 Map</a>
+                    </div>
+                </div>
+
+                <div class="place-card">
+                    <div class="place-header">
+                        <div>
+                            <div class="place-title">🎪 Marché aux Puces de Saint-Ouen</div>
+                            <div class="place-desc">World's largest antique market. Vintage clothes, furniture, art. Weekends only (Sat-Mon). Bargaining expected. Metro Line 4 to Porte de Clignancourt (20 min from Airbnb).</div>
+                        </div>
+                        <a href="https://maps.google.com/?q=Marché+aux+Puces+de+Saint-Ouen" target="_blank" class="place-link">📍 Map</a>
+                    </div>
+                </div>
+
+                <h3>🍷 Wine Bars & Hidden Gems</h3>
+
+                <div class="place-card">
+                    <div class="place-header">
+                        <div>
+                            <div class="place-title">🍷 La Cave du Paul Bert</div>
+                            <div class="place-desc">Natural wine bar, laid-back vibe. Run by sommelier from famous bistro next door. 11th arr. Metro Line 2 to Alexandre Dumas.</div>
+                        </div>
+                        <a href="https://maps.google.com/?q=La+Cave+du+Paul+Bert+Paris" target="_blank" class="place-link">📍 Map</a>
+                    </div>
+                </div>
+
+                <div class="place-card">
+                    <div class="place-header">
+                        <div>
+                            <div class="place-title">🍸 Experimental Cocktail Club</div>
+                            <div class="place-desc">Speakeasy-style bar. Dim lighting, creative cocktails. Gets packed after 10 PM. Saint-Germain location. Reservation recommended.</div>
+                        </div>
+                        <a href="https://maps.google.com/?q=Experimental+Cocktail+Club+Paris" target="_blank" class="place-link">📍 Map</a>
+                    </div>
+                </div>
+
+                <h3>🌃 Evening Spots Beyond Main Routes</h3>
+
+                <div class="place-card">
+                    <div class="place-header">
+                        <div>
+                            <div class="place-title">🌉 Pont Neuf (Night Walk)</div>
+                            <div class="place-desc">Oldest bridge in Paris. Beautiful at night with lights. Walk from Saint-Germain. Quiet, romantic photo spot after dinner.</div>
+                        </div>
+                        <a href="https://maps.google.com/?q=Pont+Neuf+Paris" target="_blank" class="place-link">📍 Map</a>
+                    </div>
+                </div>
+
+                <div class="place-card">
+                    <div class="place-header">
+                        <div>
+                            <div class="place-title">🗼 Eiffel Tower Sparkle (Night)</div>
+                            <div class="place-desc">Tower sparkles for 5 minutes every hour after dark (9 PM-1 AM in May). Best view from Trocadéro. Crowded but worth it for photos.</div>
+                        </div>
+                        <a href="https://maps.google.com/?q=Trocadéro+Paris" target="_blank" class="place-link">📍 Map</a>
+                    </div>
+                </div>
+
+                <div class="place-card">
+                    <div class="place-header">
+                        <div>
+                            <div class="place-title">🌆 Montparnasse Tower Observation Deck</div>
+                            <div class="place-desc">Best VIEWS of Eiffel Tower (because you're not on it). 360° panorama. Less touristy than Eiffel climb. Open until 11 PM. €20 entry.</div>
+                        </div>
+                        <a href="https://maps.google.com/?q=Tour+Montparnasse+Paris" target="_blank" class="place-link">📍 Map</a>
+                    </div>
+                </div>
+
+                <div class="alert-box">
+                    <strong>💡 Pro Strategy:</strong> Save these for May 10 (flexible day), weather backup options, or tack onto main routes if you finish early. Markets are best Saturday-Sunday mornings. Parks are perfect for golden hour photos (8-9 PM).
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- PHOTOS TAB -->
+    <div id="photos" class="tab-content">
+        <div class="container">
+            <div class="section-card">
+                <h2>📸 Dating Profile Photo Locations</h2>
+                <div class="day-summary">
+                    <strong>Goal:</strong> Aesthetic + masculine vibe shots for you and Dima<br>
+                    <strong>Best time:</strong> Golden hour (8-9 PM in May)<br>
+                    <strong>Strategy:</strong> Mix of casual + posed, outdoor + urban
+                </div>
+
+                <div class="info-grid">
+                    <div class="info-card">
+                        <h4>1. Seine Riverbanks</h4>
+                        <ul>
+                            <li><strong>Where:</strong> Pont Alexandre III, Île Saint-Louis</li>
+                            <li><strong>Vibe:</strong> Stone walls, water, golden light</li>
+                            <li><strong>Outfit:</strong> Rolled sleeves, relaxed confidence</li>
+                            <li><strong>Shots:</strong> Leaning on wall looking at water, candid walk</li>
+                        </ul>
+                    </div>
+
+                    <div class="info-card">
+                        <h4>2. Tuileries / Luxembourg Gardens</h4>
+                        <ul>
+                            <li><strong>Where:</strong> Green chairs, open lawns</li>
+                            <li><strong>Vibe:</strong> Casual European park life</li>
+                            <li><strong>Outfit:</strong> Light layers, clean look</li>
+                            <li><strong>Shots:</strong> Sitting in chair looking relaxed, walking shots</li>
+                        </ul>
+                    </div>
+
+                    <div class="info-card">
+                        <h4>3. Rooftop Bars at Sunset</h4>
+                        <ul>
+                            <li><strong>Where:</strong> ROOF Paris, 10ème Ciel</li>
+                            <li><strong>Vibe:</strong> City backdrop, drink in hand</li>
+                            <li><strong>Outfit:</strong> Open-collar shirt, smart casual</li>
+                            <li><strong>Shots:</strong> Leaning on railing with city behind</li>
+                        </ul>
+                    </div>
+
+                    <div class="info-card">
+                        <h4>4. Canal Saint-Martin</h4>
+                        <ul>
+                            <li><strong>Where:</strong> Sitting on canal edge</li>
+                            <li><strong>Vibe:</strong> Young, trendy, European casual</li>
+                            <li><strong>Outfit:</strong> White tee, jeans</li>
+                            <li><strong>Shots:</strong> Feet dangling, looking over shoulder</li>
+                        </ul>
+                    </div>
+
+                    <div class="info-card">
+                        <h4>5. Montmartre Stairs</h4>
+                        <ul>
+                            <li><strong>Where:</strong> Steps leading to Sacré-Cœur</li>
+                            <li><strong>Vibe:</strong> City views, architectural backdrop</li>
+                            <li><strong>Outfit:</strong> Fitted tee, windblown look</li>
+                            <li><strong>Shots:</strong> Sitting on steps, looking back at city</li>
+                        </ul>
+                    </div>
+
+                    <div class="info-card">
+                        <h4>6. Parc des Buttes-Chaumont</h4>
+                        <ul>
+                            <li><strong>Where:</strong> Hills, cliffs, waterfall backdrop</li>
+                            <li><strong>Vibe:</strong> Adventurous, outdoorsy</li>
+                            <li><strong>Outfit:</strong> Casual layers, earthy tones</li>
+                            <li><strong>Shots:</strong> Dramatic nature backgrounds</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="alert-box">
+                    <strong>📸 Photo Strategy:</strong> Bring portable charger • Wear layers (easy to change looks) • Get candid walking shots + posed static shots • Use burst mode • Ask locals to take photos (better angles than selfies) • Schedule golden hour (8-9 PM) for outdoor shots
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- TIPS TAB -->
+    <div id="tips" class="tab-content">
+        <div class="container">
+            <div class="section-card">
+                <h2>💡 Essential Tips & Resources</h2>
+
+                <h3>Cold Approach Framework</h3>
+                <div class="info-grid">
+                    <div class="info-card">
+                        <h4>Best Spots</h4>
+                        <ul>
+                            <li>Coffee shops (BlackBird, The Coffee)</li>
+                            <li>Canal Saint-Martin (daytime)</li>
+                            <li>Parks (Tuileries, Luxembourg)</li>
+                            <li>Le Marais streets (afternoon/evening)</li>
+                        </ul>
+                    </div>
+
+                    <div class="info-card">
+                        <h4>Opening Line</h4>
+                        <ul>
+                            <li>"Excusez-moi... do you speak English?"</li>
+                            <li>"I thought you were cute and wanted to say hi"</li>
+                            <li>Direct works well in Paris</li>
+                            <li>Parisians respect confidence</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <h3>Day Trip Options</h3>
+                <div class="info-grid">
+                    <div class="info-card">
+                        <h4>Versailles (~40 min)</h4>
+                        <ul>
+                            <li>Palace + massive gardens</li>
+                            <li>Very grand, touristy but iconic</li>
+                            <li>Go early (9 AM) to beat crowds</li>
+                            <li>RER C train, €8 each way</li>
+                        </ul>
+                    </div>
+
+                    <div class="info-card">
+                        <h4>Fontainebleau (~1 hour)</h4>
+                        <ul>
+                            <li>Château + forest hiking</li>
+                            <li>Less crowded than Versailles</li>
+                            <li>More rugged/nature vibe</li>
+                            <li>Train from Gare de Lyon</li>
+                        </ul>
+                    </div>
+
+                    <div class="info-card">
+                        <h4>Reims (~45 min)</h4>
+                        <ul>
+                            <li>Champagne region</li>
+                            <li>Cathedral + vineyards</li>
+                            <li>Sightseeing + day drinking</li>
+                            <li>TGV from Gare de l'Est</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <h3>Apps & Resources</h3>
+                <div class="info-grid">
+                    <div class="info-card">
+                        <h4>Must-Download Apps</h4>
+                        <ul>
+                            <li><strong>Citymapper:</strong> Best transit navigation</li>
+                            <li><strong>Google Maps:</strong> Download offline</li>
+                            <li><strong>IDF Mobilités:</strong> Official Paris transit app</li>
+                        </ul>
+                    </div>
+
+                    <div class="info-card">
+                        <h4>Pack Essentials</h4>
+                        <ul>
+                            <li>Portable charger (must-have)</li>
+                            <li>Comfortable walking shoes</li>
+                            <li>Light jacket/layers (61-73°F days)</li>
+                            <li>Sunglasses for photos</li>
+                        </ul>
+                    </div>
+
+                    <div class="info-card">
+                        <h4>Timing Tips</h4>
+                        <ul>
+                            <li><strong>Golden hour:</strong> 8-9 PM in May</li>
+                            <li><strong>Metro closes:</strong> 1:15 AM weekdays, 2:15 AM weekends</li>
+                            <li><strong>Rooftop bars:</strong> Book ahead for weekends</li>
+                            <li><strong>Museums:</strong> Many closed Tuesdays</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="alert-box">
+                    <strong>🎯 Location Advantage:</strong> You're staying at 14 Blvd de la Chapelle (Gare du Nord/Barbès area) — 15 min walk to Montmartre, direct Metro Line 2 to Le Marais and everywhere else. Your location is perfect for this trip!
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function openTab(evt, tabName) {
+            var tabContents = document.getElementsByClassName("tab-content");
+            for (var i = 0; i < tabContents.length; i++) {
+                tabContents[i].classList.remove("active");
+            }
+            var tabBtns = document.getElementsByClassName("tab-btn");
+            for (var i = 0; i < tabBtns.length; i++) {
+                tabBtns[i].classList.remove("active");
+            }
+            document.getElementById(tabName).classList.add("active");
+            evt.currentTarget.classList.add("active");
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+    </script>
+</body>
+</html>
